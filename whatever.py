@@ -85,5 +85,14 @@ async def expose(ctx, user: discord.Member):
         await ctx.send( f"{fmsgs}\n\n- {user.display_name}")
     else:
         await ctx.send("too much yap. sorry")
+
+@bot.command
+async def inject(ctx, user: discord.Member):
+    try:
+        await user.send("your device has been injected with a DEADLY virus.\nif you believe this is a mistake, please go to _")
+    except discord.Forbidden:
+        await ctx.send(f"failed to inject {user.display_name}")
+    except discord.HTTPException as err:
+        await ctx.send(f"critical error: {err}")
         
 bot.run("MTU0MjA0NTgwNTE2OTM0ODYxOQ.GJYK93.8e_WvfuM12b3xX1ar68XrAXMcmVDWmTrdHK3uQ")

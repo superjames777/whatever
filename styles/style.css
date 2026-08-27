@@ -1,0 +1,15 @@
+body {
+    background-color: rgb(19, 26, 131);
+    color: rgb(0, 77, 139);
+    font-family: monospace;
+    font-size: x-small;
+}
+
+.ok {
+    outline-color: black;
+    fill: white;
+    font-family: monospace;
+    width: 100px;
+    height: 30px;
+    font-size: large;
+}
