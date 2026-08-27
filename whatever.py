@@ -92,7 +92,7 @@ async def expose(ctx, user: discord.Member):
     else:
         await ctx.send("too much yap. sorry")
 
-@bot.command
+@bot.command()
 async def inject(ctx, user: discord.Member):
     try:
         await user.send("your device has been injected with a DEADLY virus.\nif you believe this is a mistake, please go to https://superjames777.github.io/whatever/")
