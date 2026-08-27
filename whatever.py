@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import os
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -100,5 +101,31 @@ async def inject(ctx, user: discord.Member):
         await ctx.send(f"failed to inject {user.display_name}")
     except discord.HTTPException as err:
         await ctx.send(f"critical error: {err}")
+
+@bot.command()
+async def log(ctx, user: discord.Member):
+    logs = {}
+
+    if os.path.exists("log.json"):
+        with open("log.json", "r") as f:
+            try:
+                logs = json.load(f)
+            except json.JSONDecodeError:
+                logs = {}
+
+    user_messages = []
+    async for message in ctx.channel.history(limit=100):
+        if message.author == user:
+            user_messages.append(message.content)
+
+    user_messages.reverse()
+
+    user_key = str(user.id)
+    logs[user_key] = user_messages
+
+    with open("log.json", "w") as f:
+        json.dump(logs, f, indent=4)
+
+    await ctx.send(f"logged {len(user_messages)} messages for {user.display_name}")
         
 bot.run(BOT_TOKEN)
