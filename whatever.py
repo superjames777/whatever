@@ -127,5 +127,12 @@ async def log(ctx, user: discord.Member):
         json.dump(logs, f, indent=4)
 
     await ctx.send(f"logged {len(user_messages)} messages for {user.display_name}")
+
+@bot.command()
+async def pickagame(ctx, *games):
+    maxint = len(games) - 1
+    gameslist = list(games)
+    result = gameslist[random.randint(0, maxint)]
+    await ctx.send(f"chosen game: {result}")
         
 bot.run(BOT_TOKEN)
