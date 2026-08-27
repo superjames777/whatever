@@ -150,8 +150,16 @@ async def log_error(interaction: discord.Interaction, error: app_commands.AppCom
         await interaction.response.send_message("only admins+ can use the log command", ephemeral=True)
 
 @bot.tree.command(name="pickagame", description="randomly pick a game from space separated options")
-async def pickagame(interaction: discord.Interaction, games: str):
-    gameslist = games.split()
+async def pickagame(interaction: discord.Interaction, games: str, pinned: bool = False):
+    if pinned:
+        async for pin in interaction.channel.pins(limit=None):
+            if pin.content.lower().startswith("games: "):
+                pincontent = "".join(pin.content)
+                npincontent = pincontent.replace("games: ", "")
+                gameslist = npincontent.split()
+                break
+    else:
+        gameslist = games.split()
     if not gameslist:
         await interaction.response.send_message("no games?")
         return
