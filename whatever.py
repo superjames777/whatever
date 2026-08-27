@@ -42,6 +42,13 @@ async def calculate(ctx, num1: float = 0.0, operator: str = "+", num2: float = 0
             await ctx.send("cant divide by zero")
         else:
             await ctx.send(f"{num1 % num2}")
+    elif operator == "**":
+        await ctx.send(f"{num1 ** num2}")
+    elif operator == "//":
+        if num2 == 0.0:
+            await ctx.send("cant divide by zero")
+        else:
+            await ctx.send(f"{num1 // num2}")
     else:
         await ctx.send("not an operator")
 
