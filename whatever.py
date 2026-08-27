@@ -1,8 +1,9 @@
-import discord
-from discord.ext import commands
-import random
 import os
 import json
+import random
+import discord
+from discord import app_commands
+from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,94 +17,108 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
+    try:
+        synced = await bot.tree.sync()
+        print(f"Logged in as {bot.user}")
+        print(f"Synced {len(synced)} slash commands")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
 
-@bot.command()
-async def roll(ctx, min: int = 0, max: int = 100):
-    await ctx.send(random.randint(min, max))
+@bot.tree.command(name="roll", description="roll a random number between min and max (inclusive)")
+async def roll(interaction: discord.Interaction, min: int = 0, max: int = 100):
+    await interaction.response.send_message(str(random.randint(min, max)))
 
-@bot.command()
-async def quote(ctx):
-    lastmsgs = [msg async for msg in ctx.channel.history(limit=2)]
+@bot.tree.command(name="quote", description="get a wise quote")
+async def quote(interaction: discord.Interaction):
+    lastmsgs = [msg async for msg in interaction.channel.history(limit=2)]
     if len(lastmsgs) > 1:
         lastmsg = lastmsgs[1]
-        await ctx.send(f'"{lastmsg.content}" - {lastmsg.author.display_name}')
+        await interaction.response.send_message(f'"{lastmsg.content}" - {lastmsg.author.display_name}')
     else:
-        await ctx.send(f'"called it too early" - whatever')
+        await interaction.response.send_message('"called it too early" - whatever')
 
-@bot.command()
-async def calculate(ctx, num1: float = 0.0, operator: str = "+", num2: float = 0.0):
+@bot.tree.command(name="calculate", description="calculate an equation")
+@app_commands.choices(operator=[
+    app_commands.Choice(name="+ (Add)", value="+"),
+    app_commands.Choice(name="- (Subtract)", value="-"),
+    app_commands.Choice(name="* (Multiply)", value="*"),
+    app_commands.Choice(name="/ (Divide)", value="/"),
+    app_commands.Choice(name="% (Modulo)", value="%"),
+    app_commands.Choice(name="** (Exponent)", value="**"),
+    app_commands.Choice(name="// (Floor Divide)", value="//")
+])
+async def calculate(interaction: discord.Interaction, num1: float = 0.0, operator: str = "+", num2: float = 0.0):
     if operator == "+":
-        await ctx.send(f"{num1 + num2}")
+        await interaction.response.send_message(f"{num1 + num2}")
     elif operator == "-":
-        await ctx.send(f"{num1 - num2}")
+        await interaction.response.send_message(f"{num1 - num2}")
     elif operator == "*":
-        await ctx.send(f"{num1 * num2}")
+        await interaction.response.send_message(f"{num1 * num2}")
     elif operator == "/":
         if num2 == 0.0:
-            await ctx.send("cant divide by zero")
+            await interaction.response.send_message("cant divide by zero")
         else:
-            await ctx.send(f"{num1 / num2}")
+            await interaction.response.send_message(f"{num1 / num2}")
     elif operator == "%":
         if num2 == 0.0:
-            await ctx.send("cant divide by zero")
+            await interaction.response.send_message("cant divide by zero")
         else:
-            await ctx.send(f"{num1 % num2}")
+            await interaction.response.send_message(f"{num1 % num2}")
     elif operator == "**":
-        await ctx.send(f"{num1 ** num2}")
+        await interaction.response.send_message(f"{num1 ** num2}")
     elif operator == "//":
         if num2 == 0.0:
-            await ctx.send("cant divide by zero")
+            await interaction.response.send_message("cant divide by zero")
         else:
-            await ctx.send(f"{num1 // num2}")
-    else:
-        await ctx.send("not an operator")
+            await interaction.response.send_message(f"{num1 // num2}")
 
-@bot.command()
-async def w(ctx, amount: int = 1, up: bool = False):
+@bot.tree.command(name="w", description="get some Ws in the CHAT")
+async def w(interaction: discord.Interaction, amount: int = 1, up: bool = False):
     version = "W" if up else "w"
     wstring = version * amount
 
     if len(wstring) > 2000:
-        await ctx.send(version * 2000)
+        await interaction.response.send_message(version * 2000)
     else:
-        await ctx.send(wstring)
+        await interaction.response.send_message(wstring)
 
-@bot.command()
-async def YorN(ctx):
+@bot.tree.command(name="yesorno", description="get random yes or no")
+async def yesorno(interaction: discord.Interaction):
     answer = random.randint(0, 1)
-    if answer == 0:
-        await ctx.send("yes")
-    else:
-        await ctx.send("no")
+    await interaction.response.send_message("yes" if answer == 0 else "no")
 
-@bot.command()
-async def expose(ctx, user: discord.Member):
-    to_expose = [msg async for msg in ctx.channel.history(limit=50) if msg.author == user]
+@bot.tree.command(name="expose", description="expose a user for their HORRIFIC crimes")
+async def expose(interaction: discord.Interaction, user: discord.Member):
+    to_expose = [msg async for msg in interaction.channel.history(limit=50) if msg.author == user]
     to_expose.reverse()
 
     if not to_expose:
-        await ctx.send("not enough yap. sorry")
+        await interaction.response.send_message("not enough yap. sorry")
+        return
 
     total_chars = sum(len(msg.content) for msg in to_expose)
 
     if total_chars <= 1000:
         fmsgs = "\n".join(msg.content for msg in to_expose)
-        await ctx.send( f"{fmsgs}\n\n- {user.display_name}")
+        await interaction.response.send_message(f"{fmsgs}\n\n- {user.display_name}")
     else:
-        await ctx.send("too much yap. sorry")
+        await interaction.response.send_message("too much yap. sorry")
 
-@bot.command()
-async def inject(ctx, user: discord.Member):
+@bot.tree.command(name="inject", description="inject a user's device with a DEALY virus that will take ALL their personal info (100% REAL)")
+async def inject(interaction: discord.Interaction, user: discord.Member):
     try:
-        await user.send("your device has been injected with a DEADLY virus.\nif you believe this is a mistake, please go to https://superjames777.github.io/whatever/")
+        await user.send(
+            "your device has been injected with a DEADLY virus.\n"
+            "if you believe this is a mistake, please go to https://superjames777.github.io/whatever/"
+        )
+        await interaction.response.send_message(f"injected {user.display_name}", ephemeral=True)
     except discord.Forbidden:
-        await ctx.send(f"failed to inject {user.display_name}")
+        await interaction.response.send_message(f"failed to inject {user.display_name}")
     except discord.HTTPException as err:
-        await ctx.send(f"critical error: {err}")
+        await interaction.response.send_message(f"critical error: {err}")
 
-@bot.command()
-async def log(ctx, user: discord.Member):
+@bot.tree.command(name="log", description="log stuff a user said")
+async def log(interaction: discord.Interaction, user: discord.Member):
     logs = {}
 
     if os.path.exists("log.json"):
@@ -114,25 +129,25 @@ async def log(ctx, user: discord.Member):
                 logs = {}
 
     user_messages = []
-    async for message in ctx.channel.history(limit=100):
+    async for message in interaction.channel.history(limit=100):
         if message.author == user:
             user_messages.append(message.content)
 
     user_messages.reverse()
-
-    user_key = str(user.id)
-    logs[user_key] = user_messages
+    logs[str(user.id)] = user_messages
 
     with open("log.json", "w") as f:
         json.dump(logs, f, indent=4)
 
-    await ctx.send(f"logged {len(user_messages)} messages for {user.display_name}")
+    await interaction.response.send_message(f"logged {len(user_messages)} messages for {user.display_name}")
 
-@bot.command()
-async def pickagame(ctx, *games):
-    maxint = len(games) - 1
-    gameslist = list(games)
-    result = gameslist[random.randint(0, maxint)]
-    await ctx.send(f"chosen game: {result}")
-        
+@bot.tree.command(name="pickagame", description="randomly pick a game from space separated options")
+async def pickagame(interaction: discord.Interaction, games: str):
+    gameslist = games.split()
+    if not gameslist:
+        await interaction.response.send_message("no games?")
+        return
+    result = random.choice(gameslist)
+    await interaction.response.send_message(f"chosen game: {result}")
+
 bot.run(BOT_TOKEN)

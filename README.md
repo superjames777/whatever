@@ -17,7 +17,7 @@ current commands (useful ones in bold):
     <li>quote</li>
     <li>calculate</li>
     <li>w</li>
-    <li>YorN</li>
+    <li>yesorno</li>
     <li>expose</li>
     <li>inject</li>
     <li><b>log<b></li>
