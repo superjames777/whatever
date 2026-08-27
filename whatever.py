@@ -169,6 +169,6 @@ async def selectuser(interaction: discord.Interaction):
 
 @bot.tree.command(name="greet", description="make whatever greet you")
 async def greet(interaction: discord.Interaction):
-    await interaction.response.send_message("hello")
+    await interaction.response.send_message("hello " + interaction.user.display_name)
 
 bot.run(BOT_TOKEN)
