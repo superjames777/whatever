@@ -1,6 +1,7 @@
 import os
 import json
 import random
+import asyncio
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -17,6 +18,8 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+user_reminders: dict[int, tuple[asyncio.Task, str]] = {}
+
 @bot.event
 async def on_ready():
     try:
@@ -25,6 +28,16 @@ async def on_ready():
         print(f"Synced {len(synced)} slash commands")
     except Exception as e:
         print(f"Failed to sync commands: {e}")
+
+async def reminder_task(userid: int, channel: discord.TextChannel, seconds: int, name: str):
+    try:
+        await asyncio.sleep(seconds)
+        await channel.send(f"{name}: finished after {seconds} seconds for <@{userid}>")
+    except asyncio.CancelledError:
+        raise
+    finally:
+        if userid in user_reminders:
+            del user_reminders[userid]
 
 @bot.tree.command(name="roll", description="roll a random number between min and max (inclusive)")
 async def roll(interaction: discord.Interaction, min: int = 0, max: int = 100):
@@ -178,5 +191,33 @@ async def selectuser(interaction: discord.Interaction):
 @bot.tree.command(name="greet", description="make whatever greet you")
 async def greet(interaction: discord.Interaction):
     await interaction.response.send_message("hello " + interaction.user.display_name)
+
+@bot.tree.command(name="reminder", description="set a reminder (up to 30 minutes)")
+async def reminder(interaction: discord.Interaction, time: int, name: str):
+    userid = interaction.user.id
+
+    if userid in user_reminders:
+        await interaction.response.send_message("reminder already active. please use /deletereminder to delete active reminder", ephemeral=True)
+        return
+
+    task = asyncio.create_task(reminder_task(userid, interaction.channel, time, name))
+
+    user_reminders[userid] = (task, name)
+
+    await interaction.response.send_message(f'reminder "{name}" made for {time} seconds', ephemeral=True)
+
+@bot.tree.command(name="deletereminder", description="delete your current reminder")
+async def deletereminder(interaction: discord.Interaction):
+    userid = interaction.user.id
+
+    if userid in user_reminders:
+        task, reason = user_reminders[userid]
+
+        task.cancel()
+        del user_reminders[userid]
+
+        await interaction.response.send_message(f'deleted active reminder "{reason}"', ephemeral=True)
+    else:
+        await interaction.response.send_message("no active reminders to delete", ephemeral=True)
 
 bot.run(BOT_TOKEN)

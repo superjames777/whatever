@@ -22,4 +22,8 @@ current commands (useful ones in bold):
     <li>inject</li>
     <li><b>log<b></li>
     <li><b>pickagame<b></li>
+    <li><b>selectuser</b></li>
+    <li>greet</li>
+    <li><b>reminder</b></li>
+    <li><b>deletereminder</b></li>
 </ul>
