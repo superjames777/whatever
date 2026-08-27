@@ -1,6 +1,12 @@
 import discord
 from discord.ext import commands
 import random
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -95,4 +101,4 @@ async def inject(ctx, user: discord.Member):
     except discord.HTTPException as err:
         await ctx.send(f"critical error: {err}")
         
-bot.run("MTU0MjA0NTgwNTE2OTM0ODYxOQ.GJYK93.8e_WvfuM12b3xX1ar68XrAXMcmVDWmTrdHK3uQ")
+bot.run(BOT_TOKEN)
