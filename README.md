@@ -11,7 +11,7 @@ just a bot i making for fun, it probably sucks but im learning (i think)
 
 ill be adding more commands here and there
 
-current commands:
+current commands (useful ones in bold):
 <ul>
     <li>roll</li>
     <li>quote</li>
@@ -20,5 +20,6 @@ current commands:
     <li>YorN</li>
     <li>expose</li>
     <li>inject</li>
-    <li>log</li>
+    <li><b>log<b></li>
+    <li><b>pickagame<b></li>
 </ul>
