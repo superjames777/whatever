@@ -10,3 +10,15 @@ but anyways
 just a bot i making for fun, it probably sucks but im learning (i think)
 
 ill be adding more commands here and there
+
+current commands:
+<ul>
+    <li>roll</li>
+    <li>quote</li>
+    <li>calculate</li>
+    <li>w</li>
+    <li>YorN</li>
+    <li>expose</li>
+    <li>inject</li>
+    <li>log</li>
+</ul>
