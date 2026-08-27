@@ -13,6 +13,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
+intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
@@ -156,5 +157,14 @@ async def pickagame(interaction: discord.Interaction, games: str):
         return
     result = random.choice(gameslist)
     await interaction.response.send_message(f"chosen game: {result}")
+
+@bot.tree.command(name="selectuser", description="pick a random user")
+async def selectuser(interaction: discord.Interaction):
+    users = []
+    async for member in interaction.guild.fetch_members(limit=None):
+        users.append((member.name, member.display_name))
+
+    user = users[random.randint(0, (len(users) - 1))]
+    await interaction.response.send_message(f"chosen user: {user[0]} ({user[1]})")
 
 bot.run(BOT_TOKEN)
