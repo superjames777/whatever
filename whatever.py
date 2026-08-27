@@ -4,6 +4,7 @@ import random
 import discord
 from discord import app_commands
 from discord.ext import commands
+from discord.app_commands import checks
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -118,6 +119,7 @@ async def inject(interaction: discord.Interaction, user: discord.Member):
         await interaction.response.send_message(f"critical error: {err}")
 
 @bot.tree.command(name="log", description="log stuff a user said")
+@checks.has_any_role("Admin", "Owner")
 async def log(interaction: discord.Interaction, user: discord.Member):
     logs = {}
 
@@ -140,6 +142,11 @@ async def log(interaction: discord.Interaction, user: discord.Member):
         json.dump(logs, f, indent=4)
 
     await interaction.response.send_message(f"logged {len(user_messages)} messages for {user.display_name}")
+
+@log.error
+async def log_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingAnyRole):
+        await interaction.response.send_message("only admins+ can use the log command", ephemeral=True)
 
 @bot.tree.command(name="pickagame", description="randomly pick a game from space separated options")
 async def pickagame(interaction: discord.Interaction, games: str):
