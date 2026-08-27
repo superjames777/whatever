@@ -95,7 +95,7 @@ async def expose(ctx, user: discord.Member):
 @bot.command
 async def inject(ctx, user: discord.Member):
     try:
-        await user.send("your device has been injected with a DEADLY virus.\nif you believe this is a mistake, please go to _")
+        await user.send("your device has been injected with a DEADLY virus.\nif you believe this is a mistake, please go to https://superjames777.github.io/whatever/")
     except discord.Forbidden:
         await ctx.send(f"failed to inject {user.display_name}")
     except discord.HTTPException as err:
