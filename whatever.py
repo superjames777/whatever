@@ -55,4 +55,12 @@ async def w(ctx, amount: int = 1, up: bool = False):
     else:
         await ctx.send(wstring)
 
+@bot.command()
+async def YorN(ctx):
+    answer = random.randint(0, 1)
+    if answer == 0:
+        await ctx.send("yes")
+    else:
+        await ctx.send("no")
+
 bot.run("MTU0MjA0NTgwNTE2OTM0ODYxOQ.GJYK93.8e_WvfuM12b3xX1ar68XrAXMcmVDWmTrdHK3uQ")
