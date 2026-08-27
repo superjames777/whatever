@@ -63,4 +63,23 @@ async def YorN(ctx):
     else:
         await ctx.send("no")
 
+@bot.command()
+async def expose(ctx, user):
+    msghistory = [msg async for msg in ctx.channel.history(limit=50)]
+    to_expose = []
+    for msg in msghistory:
+        if msg.author.display_name == user:
+            to_expose.append(msg.content)
+    total_chars = 0
+    if len(to_expose) > 0:
+        for msg in to_expose:
+            for char in msg.content:
+                total_chars += 1
+        if total_chars <= 1000:
+            await ctx.send(f"{to_expose} - {user}")
+        else:
+            await ctx.send("too much yap. sorry")
+    else:
+        await ctx.send("not enough yap. sorry")
+
 bot.run("MTU0MjA0NTgwNTE2OTM0ODYxOQ.GJYK93.8e_WvfuM12b3xX1ar68XrAXMcmVDWmTrdHK3uQ")
