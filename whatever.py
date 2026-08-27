@@ -64,7 +64,7 @@ async def YorN(ctx):
         await ctx.send("no")
 
 @bot.command()
-async def expose(ctx, user):
+async def expose(ctx, user: discord.Member):
     to_expose = [msg async for msg in ctx.channel.history(limit=50) if msg.author == user]
 
     if not to_expose:
